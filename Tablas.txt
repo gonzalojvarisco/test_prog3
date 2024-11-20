@@ -1,0 +1,117 @@
+CREATE TABLE Usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    tipo_usuario VARCHAR(50) NOT NULL -- Puede ser "Alumno", "Profesor" o "Administrador"
+);
+
+
+CREATE TABLE Profesor (
+    id INT PRIMARY KEY, -- Mismo ID que en la tabla Usuario
+    especialidad VARCHAR(100),
+    FOREIGN KEY (id) REFERENCES Usuario(id)
+);
+
+
+CREATE TABLE Administrador (
+    id INT PRIMARY KEY, -- Mismo ID que en la tabla Usuario
+    FOREIGN KEY (id) REFERENCES Usuario(id)
+);
+
+
+CREATE TABLE Curso (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL,
+    cupo INT NOT NULL,
+    nota_aprobacion DECIMAL(5, 2) NOT NULL,
+    notas_parciales_requeridas INT NOT NULL,
+    fecha_promocion_inicio DATE,
+    fecha_promocion_fin DATE,
+    profesor_id INT NOT NULL, -- Relación con Profesor
+    FOREIGN KEY (profesor_id) REFERENCES Profesor(id)
+);
+
+
+CREATE TABLE Abono (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    valor_total DECIMAL(10, 2) NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL
+);
+
+
+CREATE TABLE Alumno (
+    id INT PRIMARY KEY, -- Mismo ID que en la tabla Usuario
+    limite_cursos INT NOT NULL,
+    abono_id INT, -- Relación con la tabla Abono
+    FOREIGN KEY (id) REFERENCES Usuario(id),
+    FOREIGN KEY (abono_id) REFERENCES Abono(id)
+);
+
+
+CREATE TABLE AlumnoCurso (
+    alumno_id INT NOT NULL,
+    curso_id INT NOT NULL,
+    nota_final DECIMAL(5, 2), -- Nota final del curso para el alumno
+    PRIMARY KEY (alumno_id, curso_id),
+    FOREIGN KEY (alumno_id) REFERENCES Alumno(id),
+    FOREIGN KEY (curso_id) REFERENCES Curso(id)
+);
+
+
+CREATE TABLE Reporte (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(50) NOT NULL, -- Tipo de reporte: "Recaudación", "Aprobados", etc.
+    contenido CLOB, -- Texto o JSON del reporte
+    fecha_generacion TIMESTAMP NOT NULL,
+    curso_id INT, -- Si el reporte está asociado a un curso específico
+    FOREIGN KEY (curso_id) REFERENCES Curso(id)
+);
+
+
+
+
+
+
+
+
+
+
+INSERTS
+
+INSERT INTO Usuario (id, nombre, email, password, tipo_usuario)
+VALUES (1, 'Juan Pérez', 'juan.perez@example.com', 'password123', 'Profesor');
+
+INSERT INTO Usuario (id, nombre, email, password, tipo_usuario)
+VALUES (2, 'Ana Gómez', 'ana.gomez@example.com', 'password456', 'Profesor');
+
+INSERT INTO Usuario (id, nombre, email, password, tipo_usuario)
+VALUES (3, 'Luis Martínez', 'luis.martinez@example.com', 'password789', 'Profesor');
+
+
+
+
+INSERT INTO Profesor (id, especialidad)
+VALUES (1, 'Matemáticas');
+
+INSERT INTO Profesor (id, especialidad)
+VALUES (2, 'Física');
+
+INSERT INTO Profesor (id, especialidad)
+VALUES (3, 'Química');
+
+
+
+
+INSERT INTO Curso (nombre, precio, cupo, nota_aprobacion, notas_parciales_requeridas, fecha_promocion_inicio, fecha_promocion_fin, profesor_id)
+VALUES ('Curso de Matemáticas', 2000.50, 25, 7.0, 2, '2024-01-01', '2024-01-31', 1);
+
+INSERT INTO Curso (nombre, precio, cupo, nota_aprobacion, notas_parciales_requeridas, fecha_promocion_inicio, fecha_promocion_fin, profesor_id)
+VALUES ('Curso de Física Avanzada', 3000.75, 20, 8.0, 3, '2024-02-01', '2024-02-28', 2);
+
+INSERT INTO Curso (nombre, precio, cupo, nota_aprobacion, notas_parciales_requeridas, fecha_promocion_inicio, fecha_promocion_fin, profesor_id)
+VALUES ('Curso de Química Básica', 1500.00, 30, 6.5, 1, NULL, NULL, 3);
+
+
